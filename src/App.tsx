@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import {TodoList} from './components/TodoList';
 import {v1} from 'uuid';
+import AddItemForm from './components/AddItemForm';
 
 export type TaskType = {
     id: string
@@ -46,6 +47,8 @@ function App() {
         ]
     })
 
+
+
     function changeFilter(value: FilterValueType, todoListID: string) {
         let todoList = todoLists.find(tl => tl.id === todoListID);
         if (todoList) {
@@ -77,6 +80,14 @@ function App() {
             setTasks({...tasks})
         }
     }
+    function changeTitle(id: string, title: string, todoListID: string) {
+        let todoList = tasks[todoListID];
+        let task = todoList.find(t => t.id === id)
+        if (task) {
+            task.title = title
+            setTasks({...tasks})
+        }
+    }
 
     function selectAll(value: boolean, todoListID: string) {
         let todoList = tasks[todoListID];
@@ -91,9 +102,31 @@ function App() {
         setTasks({...tasks})
     }
 
+    const addTodoList = (title: string) => {
+        let newTodoListID = v1();
+        let newTodoList: TodoListType = {
+            id: newTodoListID,
+            title: title,
+            filter: 'all'
+        };
+        setTodoLists([...todoLists, newTodoList])
+        setTasks({
+            ...tasks,
+            [newTodoListID]: []
+        })
+    }
+
+    function changeTodoListTitle(todoListID: string, newTitle: string) {
+        const todoList = todoLists.find(tl => tl.id === todoListID);
+        if(todoList) {
+            todoList.title = newTitle;
+            setTodoLists([...todoLists])
+        }
+    }
 
     return (
         <div className="App">
+            <AddItemForm addItem={addTodoList}/>
             {
                 todoLists.map(tl => {
 
@@ -116,9 +149,11 @@ function App() {
                             changeFilter={changeFilter}
                             addTask={addTask}
                             changeTasksStatus={changeStatus}
+                            changeTasksTitle={changeTitle}
                             filter={tl.filter}
                             selectAll={selectAll}
-                            removeTodoList={removeTodoList}/>
+                            removeTodoList={removeTodoList}
+                            changeTodoListTitle={changeTodoListTitle}/>
                     )
                 })
             }
