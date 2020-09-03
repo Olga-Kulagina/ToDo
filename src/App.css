@@ -15,9 +15,9 @@
   color: red;
 }
 
-.active-filter {
-  background-color: aquamarine;
-}
+/*.active-filter {*/
+/*  color: red;*/
+/*}*/
 
 .is-done {
   opacity: 0.5;
