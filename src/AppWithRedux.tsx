@@ -1,4 +1,4 @@
-import React, {useReducer, useState} from 'react';
+import React, {useCallback, useReducer, useState} from 'react';
 import './App.css';
 import {TodoList} from './components/TodoList';
 import {v1} from 'uuid';
@@ -13,6 +13,8 @@ import {
     todoListReducer
 } from './state/todolist-reducer';
 import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from './state/tasks-reducer';
+import {useDispatch, useSelector} from 'react-redux';
+import {AppRootStateType} from './state/store';
 
 export type TaskType = {
     id: string
@@ -37,64 +39,46 @@ function AppWithRedux() {
     let todoListID1 = v1();
     let todoListID2 = v1();
 
-    let [todoLists, dispatchToTodoList] = useReducer(todoListReducer, [
-        {id: todoListID1, title: 'What to learn', filter: 'all'},
-        {id: todoListID2, title: 'What to buy', filter: 'active'}
-    ])
+    let todoLists = useSelector<AppRootStateType, Array<TodoListType>>(state => state.todolists)
+    let tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
 
-    let [tasks, dispatchToTasks] = useReducer(tasksReducer, {
-        [todoListID1]: [
-            {id: v1(), title: 'JS', isDone: false},
-            {id: v1(), title: 'CSS', isDone: true},
-            {id: v1(), title: 'React', isDone: false},
-            {id: v1(), title: 'Redux', isDone: false}
-        ],
-        [todoListID2]: [
-            {id: v1(), title: 'Dog', isDone: false},
-            {id: v1(), title: 'Cat', isDone: true},
-            {id: v1(), title: 'Pig', isDone: false},
-            {id: v1(), title: 'Horse', isDone: false}
-        ]
-    })
+   let dispatch = useDispatch()
 
 
-    function changeFilter(value: FilterValueType, todoListID: string) {
+    const changeFilter = useCallback((value: FilterValueType, todoListID: string) => {
         const action = ChangeTodoListFilterAC(value, todoListID)
-        dispatchToTodoList(action)
-    }
+        dispatch(action)
+    }, [])
 
-    function removeTask(taskID: string, todoListID: string) {
-        dispatchToTasks(removeTaskAC(taskID, todoListID))
-    }
+    const removeTask = useCallback((taskID: string, todoListID: string) => {
+        dispatch(removeTaskAC(taskID, todoListID))
+    }, [])
 
-    function addTask(title: string, todoListID: string) {
-        dispatchToTasks(addTaskAC(title, todoListID))
-    }
+    const addTask = useCallback ((title: string, todoListID: string) => {
+        dispatch(addTaskAC(title, todoListID))
+    }, [])
+
+    const changeStatus = useCallback((id: string, isDone: boolean, todoListID: string) => {
+        dispatch(changeTaskStatusAC(id, isDone, todoListID))
+    }, [])
+
+    const changeTitle = useCallback((id: string, title: string, todoListID: string) => {
+        dispatch(changeTaskTitleAC(id, title, todoListID))
+    }, [])
 
 
-    function changeStatus(id: string, isDone: boolean, todoListID: string) {
-        dispatchToTasks(changeTaskStatusAC(id, isDone, todoListID))
-    }
+    const removeTodoList = useCallback((todoListID: string) => {
+        dispatch(RemoveTodoListAC(todoListID))
+    }, [])
 
-    function changeTitle(id: string, title: string, todoListID: string) {
-        dispatchToTasks(changeTaskTitleAC(id, title, todoListID))
-    }
-
-
-    function removeTodoList(todoListID: string) {
-        dispatchToTodoList(RemoveTodoListAC(todoListID))
-        dispatchToTasks(RemoveTodoListAC(todoListID))
-    }
-
-    const addTodoList = (title: string) => {
+    const addTodoList = useCallback ((title: string) => {
         let action = AddTodoListAC(title)
-        dispatchToTodoList(action)
-        dispatchToTasks(action)
-    }
+        dispatch(action)
+    }, [])
 
-    function changeTodoListTitle(todoListID: string, newTitle: string) {
-        dispatchToTodoList(ChangeTodoListTitleAC(newTitle, todoListID))
-    }
+    const changeTodoListTitle = useCallback((todoListID: string, newTitle: string) => {
+        dispatch(ChangeTodoListTitleAC(newTitle, todoListID))
+    }, [])
 
     return (
         <div className="App">
