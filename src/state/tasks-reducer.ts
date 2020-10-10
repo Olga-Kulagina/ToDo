@@ -56,14 +56,12 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
             return stateCopy;
         }
         case 'CHANGE-TASK-STATUS': {
-            let stateCopy = {...state}
-            let todoList = stateCopy[action.todolistId];
-            let task = todoList.find(t => t.id === action.taskId)
-            if (task) {
-                task.isDone = action.isDone
-                return stateCopy
-            }
-            return stateCopy;
+            let todolistTasks = state[action.todolistId];
+            state[action.todolistId] = todolistTasks
+                .map(t => t.id === action.taskId
+                    ? {...t, isDone: action.isDone}
+                    : t);
+            return ({...state});
         }
         case 'CHANGE-TASK-TITLE': {
             return {

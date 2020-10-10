@@ -3,10 +3,11 @@ import {TextField} from '@material-ui/core';
 
 export type EditableSpanPropsType = {
     value: string
-    changeValue?: (value: string) => void
+    changeValue: (value: string) => void
 }
 
-function EditableSpan(props: EditableSpanPropsType) {
+const EditableSpan = React.memo((props: EditableSpanPropsType) => {
+    console.log("EditableSpan called")
 
     let [editMode, setEditMode] = useState(false);
     let [title, setTitle] = useState(props.value)
@@ -31,6 +32,6 @@ function EditableSpan(props: EditableSpanPropsType) {
             variant={'outlined'}/>
             : <span onDoubleClick={activatedEditMode}>{props.value}</span>
     )
-}
+})
 
 export default EditableSpan;
