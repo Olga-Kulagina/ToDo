@@ -22,6 +22,8 @@ import {
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from './state/store';
 import {TaskStatuses, TaskType} from './api/todolists-api'
+import { LinearProgress } from '@material-ui/core';
+import {RequestStatusType} from './state/app-reducer';
 
 
 
@@ -31,8 +33,7 @@ export type TasksStateType = {
 
 
 function AppWithRedux() {
-    let todolistId1 = v1();
-    let todolistId2 = v1();
+    const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
@@ -95,6 +96,7 @@ function AppWithRedux() {
                     </Typography>
                     <Button color="inherit">Login</Button>
                 </Toolbar>
+                {status === 'loading' && <LinearProgress color='secondary'/>}
             </AppBar>
             <Container fixed>
                 <Grid container style={{padding: "20px"}}>
