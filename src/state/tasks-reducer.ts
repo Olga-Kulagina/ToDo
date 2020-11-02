@@ -1,10 +1,13 @@
-import {TasksStateType} from '../App';
-import {v1} from 'uuid';
+
 import {AddTodolistActionType, RemoveTodolistActionType, SetTodolistsActionType} from './todolists-reducer';
-import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI} from '../api/todolists-api'
+import {TaskStatuses, TaskType, todolistsAPI} from '../api/todolists-api'
 import {Dispatch} from 'redux';
 import {AppRootStateType} from './store';
-import {setAppStatusAC} from './app-reducer';
+import {setAppErrorAC, setAppStatusAC} from './app-reducer';
+
+export type TasksStateType = {
+    [key: string]: Array<TaskType>
+}
 
 export type RemoveTaskActionType = {
     type: 'REMOVE-TASK',
@@ -149,8 +152,16 @@ export const addTaskTC = (todolistId: string, title: string) => (dispatch: Dispa
     dispatch(setAppStatusAC('loading'))
     todolistsAPI.createTask(todolistId, title)
         .then((res) => {
-            const task = res.data.data.item
-            dispatch(addTaskAC(task))
+            if (res.data.resultCode === 0) {
+                const task = res.data.data.item
+                dispatch(addTaskAC(task))
+            } else {
+                if (res.data.messages.length) {
+                    dispatch(setAppErrorAC(res.data.messages[0]))
+                } else {
+                    dispatch(setAppErrorAC('Some error'))
+                }
+            }
             dispatch(setAppStatusAC('succeeded'))
         })
 }
@@ -201,6 +212,6 @@ export const updateTaskTitleTC = (todolistId: string, taskId: string, title: str
             })
         }
 
-}
+    }
 
 

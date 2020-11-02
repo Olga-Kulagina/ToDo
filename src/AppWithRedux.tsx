@@ -1,21 +1,16 @@
 import React, {useCallback, useEffect} from 'react'
 import './App.css';
 import {Todolist} from './Todolist';
-import {v1} from 'uuid';
 import {AddItemForm} from './AddItemForm';
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@material-ui/core';
 import {Menu} from '@material-ui/icons';
 import {
-    addTodolistAC,
     changeTodolistFilterAC,
-    changeTodolistTitleAC, createTodolistTC, deleteTodolistTC, FilterValuesType, getTodolistsThunkCreator,
-    removeTodolistAC, TodolistDomainType, updateTodolistTitleTC
+    createTodolistTC, deleteTodolistTC, FilterValuesType, getTodolistsThunkCreator,
+    TodolistDomainType, updateTodolistTitleTC
 } from './state/todolists-reducer'
 import {
-    addTaskAC,
     addTaskTC,
-    changeTaskStatusAC,
-    changeTaskTitleAC,
     removeTaskAC,
     updateTaskStatusTC, updateTaskTitleTC
 } from './state/tasks-reducer';
@@ -24,6 +19,7 @@ import {AppRootStateType} from './state/store';
 import {TaskStatuses, TaskType} from './api/todolists-api'
 import { LinearProgress } from '@material-ui/core';
 import {RequestStatusType} from './state/app-reducer';
+import {ErrorSnackbar} from './ErrorSnackbar';
 
 
 
@@ -86,6 +82,7 @@ function AppWithRedux() {
 
     return (
         <div className="App">
+            <ErrorSnackbar />
             <AppBar position="static">
                 <Toolbar>
                     <IconButton edge="start" color="inherit" aria-label="menu">
@@ -100,7 +97,7 @@ function AppWithRedux() {
             </AppBar>
             <Container fixed>
                 <Grid container style={{padding: "20px"}}>
-                    <AddItemForm addItem={addTodolist}/>
+                    <AddItemForm addItem={addTodolist} disabled={false}/>
                 </Grid>
                 <Grid container spacing={3}>
                     {
@@ -118,6 +115,7 @@ function AppWithRedux() {
                                         addTask={addTask}
                                         changeTaskStatus={changeStatus}
                                         filter={tl.filter}
+                                        entityStatus={tl.entityStatus}
                                         removeTodolist={removeTodolist}
                                         changeTaskTitle={changeTaskTitle}
                                         changeTodolistTitle={changeTodolistTitle}
