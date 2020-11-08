@@ -1,5 +1,11 @@
 import axios from 'axios'
 
+type AuthMeType= {
+    id: number
+    email: string
+    login: string
+}
+
 const settings = {
     withCredentials: true,
     headers: {
@@ -19,11 +25,17 @@ export type LoginParamsType = {
 }
 
 
-
 export const authAPI = {
     login(data: LoginParamsType) {
         return instance.post<ResponseType<{ userId: number }>>('auth/login', data)
+    },
+    logout() {
+        return instance.delete<ResponseType>('auth/login')
+    },
+    me() {
+        return instance.get<ResponseType<AuthMeType>>('auth/me')
     }
+
 }
 
 
